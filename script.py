@@ -77,7 +77,7 @@ def load_data(paperurl,msurl):
                 qnums.append(pagenum)
             if temp is not None: temp += "\n" + l
         if temp is not None: qtexts.append(temp)
-    [os.remove(file) for file in os.listdir('./') if file.endswith('.png')]
+    [os.remove(file) for file in os.listdir('./') if file.endswith('.png')] 
     [os.remove(file) for file in os.listdir('./') if file.endswith('.html')]
     [os.remove(file) for file in os.listdir('./') if file.endswith('.pdf')]
     if len(qtexts) == 0:
