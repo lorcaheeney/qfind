@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>QFind</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/siimple@3.3.1/dist/siimple.min.css">
+        <style>
+        body {
+            margin: 0;
+            /* text-align: center;         */
+        }
+        textarea:focus, input:focus, button:focus{
+            outline: none;
+        }
+        #header {
+            text-align: center;
+            width: 100%;
+            font-size: 4rem;
+            padding: 2rem 0 0rem 0;
+            color: #43498A;
+            background-color: #fdfdfd;
+        }
+        #headerline {
+            background-color: #43498A;
+        }
+        #searchdialog {
+            display: inline-block;
+            width: 90%;
+            border-radius: 20px;
+            border: solid 2px #43498A;
+            text-align: justify;
+            text-align-last: center;
+            margin-bottom: 0.5rem;
+        }
+        #tagline {
+            text-align: center;
+            padding-top: 1rem;
+            text-align: left;
+            text-indent: 1rem;
+            color: #43498A;
+        }
+        #keysearch{
+            text-transform: uppercase;
+            text-align: left;
+            text-align-last: left;
+            text-indent: 1rem;
+            font-weight: bold;
+            font-size: 1.6rem;
+            font-family: Roboto;
+            background-color: #c4c5c6;
+            color: #43498A;
+            width: 80%;
+            height: 2rem;
+            margin-top: 1rem;
+            border-radius: 10px;
+            border: none;
+            /* margin-left: 2rem; */
+        }
+        .search {
+            border: solid 3px #1b5eb1;
+            height: 2.4rem;
+            font-family: Roboto;
+            font-size: 1.2rem;
+            color: #1b5eb1;
+            font-weight: bold;
+            margin-left: 1%;
+            margin-right: 1%;
+            border-radius: 10px;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            cursor:pointer;
+            display: inline-block;
+        }
+        .search:hover {
+            background-color: #1b5eb1;
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+        .filter{
+            display: inline-block;
+            margin-top: 0.5%;
+            margin-bottom: 1%;
+            margin-left: 2%;
+            margin-right: 2%;
+            color: #434343;
+            font-family: Roboto;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: solid 2px #43498A;
+            border-radius: 5px;
+            padding: 0.1rem 1rem 0.1rem 1rem;
+            cursor: pointer;
+        }
+        /* .filter:hover {
+            background-color: #43498A;
+            color: #ffffff;
+            border-color: #ffffff;
+        } */
+        .active {
+            background-color: #43498A;
+            color: #ffffff;
+            border-color: #ffffff;
+        }
+        .alert{
+            display: inline-block;
+            font-family: Roboto;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            width: 70%;
+        }
+        .result {
+            display: inline-block;
+            text-align: center;
+            width: 25%;
+            height: 25vh;
+            border: solid 2px #434343;
+            border-radius: 20px;
+            margin-left: 2%;
+            margin-right: 2%;
+            margin-bottom: 2%;
+        }
+        #viewbut {
+            display: inline-block;
+            margin-top: 1%;
+            margin-bottom: 3%;
+            margin-left: 10%; 
+            margin-right: 10%;
+            color: #434343;
+            font-family: Roboto;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: solid 2px #43498A;
+            border-radius: 5px;
+            padding: 0.1rem 0.3rem 0.1rem 0.3rem; 
+            cursor: pointer;
+        }
+        #viewbut:hover {
+            background-color: #43498A;
+            color: #ffffff;
+            border-color: #ffffff;
+        }
+        .overlay-out {
+            display: none;
+            width : 100%;
+            position: absolute;
+            background-color: rgba(200,200,200,0.9);
+            height: 100vh;
+            z-index: 4;
+            text-align: center;
+        }
+        .overlay {
+            width: 80%;
+            opacity: 1;
+            background-color: white;
+            height: 100vh;
+            z-index: 10;
+            border-radius: 40px;
+            border: 1px solid red;
+            margin: auto;
+            font-family: Roboto;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #43498A;
+            border: solid 2px #43498A;
+        }
+        </style>
+    </head>
+    <body>
+    
+    <div style="text-align: center;">
+    <div id="board-out" class="overlay-out">
+        <div id="board-overlay" class="overlay">
+            <h1>EXAM BOARD FILTERS</h1>
+            <div id="wjec" class="filter active" onclick="handlechange(this);">WJEC</div>
+            <div id="eduqas" class="filter active" onclick="handlechange(this);">EDUQAS</div>
+            <div id="aqa" class="filter active" onclick="handlechange(this);">AQA</div>
+            <div id="edexcel" class="filter active" onclick="handlechange(this);">EDEXCEL</div>
+            <div id="ocr" class="filter active" onclick="handlechange(this);">OCR</div>
+            <h1>SESSION FILTERS</h1>
+            <div id="summer" class="filter active" onclick="handlechange(this);">SUMMER</div>
+            <div id="winter" class="filter active" onclick="handlechange(this);">WINTER</div>
+            <h1>MODULE FILTERS</h1>
+        </div>
+    </div>
+    <div id="header" class="siimple-h1">QFind</div>
+    <div id="headerline" class="siimple-rule"></div>
+    <div id="searchdialog">
+        <div id="tagline" class="siimple-h3">
+            Search for questions using keywords and filters!
+        </div>
+        <div style="text-align: center"><input type="text" id="keysearch" /></div>
+        <div style="text-align: justify;text-align-last: center"><button id="searchbut" class="search" onclick="searchqs();">SEARCH</button>
+        <button id="filbut" class="search">VIEW FILTERS</span></div>
+    </div>
+    <div id="infoalert" class="alert siimple-alert siimple-alert--primary">THERE ARE OVER 2000 CATEGORISED QUESTIONS FROM OVER 200 PAPERS AVAILABLE TO SEARCH!</div>    
+    <div id="resalert" style="display:none" class="alert siimple-alert siimple-alert--success">YOUR SEARCH RETURNED 3 QUESTIONS</div>
+    <div id="results" style="text-align: justify; text-align-last: center;margin-top: 1rem"></div>
+    </div></body>
+    <script>
+    var modules = ["C1","C2","C3","C4","M1","S1","PH1","PH2","PH4","PH5","CH1","CH2","CH4","CH5","FUNDAMENTALS OF COMPUTER SCIENCE"];
+    var actives = {"wjec":true,"eduqas":true,"aqa":true,"edexcel":true,"ocr":true,"summer":true,"winter":false};
+    for(var mod of modules){
+        actives[mod] = true;
+        var elem = document.createElement("div");
+        elem.id = mod;
+        elem.innerHTML = mod;
+        elem.className = "filter";
+        elem.classList.add("active");
+        elem.onclick= ((t) => (() => {
+            console.log("h");
+            handlechange(t);
+        }))(elem)
+        document.getElementById("board-overlay").appendChild(elem);
+    }
+    function handlechange(elem){
+        console.log(elem);
+        if (modules.includes(elem.id)){console.log(elem.id);}
+        if (actives[elem.id]){
+            elem.classList.remove("active");
+        } else {
+            elem.classList.add("active")
+        }
+        actives[elem.id] = !actives[elem.id];
+    }
+    var l = false;
+    document.addEventListener("click",function(evt){
+        if (!document.getElementById("board-overlay").contains(evt.target) && l){
+            document.getElementById("board-out").style.cssText = "display: none;";
+            l = false;
+        }
+    });
+    document.getElementById("filbut").addEventListener("click",function(evt){
+        document.getElementById("board-out").style.cssText = "display: block;";
+        console.log(document.getElementById("board-out").style.display);
+        setTimeout(() => l = true,100);
+    })
+
+    var records = [];
+    function loadfile(){
+        var file = new XMLHttpRequest();
+        file.open("GET","http://127.0.0.1:5500/data/WJEC.txt",true);
+        file.send();
+        file.onreadystatechange= function(){
+            if (file.readyState == 4 && (file.status == 200 || file.status == 0)){
+                var text = file.responseText;
+                records = text.split("\n").filter(v => v !== "");
+                records = records.map(v => v.split("@~").filter(l => l !== ""));
+            }
+        }
+    }
+    function searchqs(){
+        var swords = document.getElementById("keysearch").value.split(" ")
+        swords = swords.filter(v => v !== "").map(s => s.toUpperCase());
+        var matches = [];
+        for(var elem of records){
+            for(var word of swords){
+                if (elem.length == 8 && elem[7].includes(word)){
+                    if (actives[elem[0]] && actives[elem[1].toLowerCase()] && actives["wjec"]){
+                        matches.push(elem);
+                        break;
+                    }
+                }
+            }
+        }
+        if (matches.length == 0){
+            document.getElementById("resalert").style.display = "none";
+        } else {
+            var n = 0
+            document.getElementById("resalert").style.display = "inline-block";
+            document.getElementById("resalert").innerHTML = `YOUR SEARCH RETURNED ${matches.length} QUESTION${matches.length == 1 ? "" : "S"}`;
+            document.getElementById("results").innerHTML = "";
+            for(var match of matches){
+                var res = document.createElement("div")
+                res.className = "result";
+                res.innerHTML = `<div class="siimple-h3" style="color: #434343;margin:2%">WJEC ${match[0]} ${match[1]} ${match[2]} Q${match[3]}</div>
+                <div id="viewbut" onclick="window.open('${match[5]+"#page="+match[4]}');">VIEW QUESTION</div>
+                <div id="viewbut" onclick="window.open('${match[6]}');">VIEW MARK SCHEME</div>`;
+                document.getElementById("results").appendChild(res);
+                n += 1
+                if (n % 3 == 0){
+                    document.getElementById("results").innerHTML += "<br>";
+                }
+            }
+        }
+    }
+    loadfile();
+    </script>
+</html>
