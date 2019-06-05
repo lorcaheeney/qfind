@@ -91,7 +91,7 @@ def load_data(paperurl,msurl):
     unique = [process_text(t) for t in texts]
     for i in range(len(unique)):
         record = "{}@~{}@~{}@~{}@~{}@~{}@~{}@~{}\n".format(info[0],info[1],info[2],i+1,qnums[i],paperurl,msurl," ".join(unique[i]))
-        with open("data/WJEC.txt","a") as fobj:
+        with open("docs/WJEC.txt","a") as fobj:
             fobj.write(record)
 
 def main():
@@ -103,7 +103,7 @@ def main():
     for i in range(0,len(lines)-1,2):
         load_data(lines[i],lines[i+1])
     print("PROCESS FINISHED.")
-    with open("data/WJEC.txt","r") as fobj:
+    with open("docs/WJEC.txt","r") as fobj:
         ldata = fobj.read()
     llines = [d for d  in ldata.split("\n") if d != ""]
     print("{} QUESTIONS FROM {} PAPERS AVAILABLE.".format(len(llines),len(lines)/2))
