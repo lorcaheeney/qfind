@@ -13,7 +13,9 @@ def process_text(text):
     return list(filter(lambda x : x!="", words))
 
 def get_info(paperurl):
-    MODULES = ["C1","C2","C3","C4","PH1","PH2","PH4","PH5","M1","S1","CH1","CH2","CH4","CH5","FUNDAMENTALS OF COMPUTER SCIENCE"]
+    MODULES = ["C1","C2","C3","C4","PH1","PH2","PH4","PH5","M1","S1","CH1","CH2","CH4","CH5","FUNDAMENTALS OF COMPUTER SCIENCE"
+    ,"MOTION, ENERGY AND MATTER","ELECTRICITY AND LIGHT","OSCILLATIONS AND NUCLEI"
+    ,"FIELDS AND OPTIONS","SIMPLE REACTIONS","CARBON COMPOUNDS","INORGANIC CHEMISTRY","ORGANIC CHEMISTRY"]
     acurl = urllib.parse.unquote(paperurl)
     os.system("curl {}  -s -k --insecure > test.pdf".format(paperurl,"test"))
     os.system("pdftohtml test.pdf -c -q -s -l 1")
@@ -39,6 +41,7 @@ def get_info(paperurl):
     print("{} {} {}".format(module,sess,year))
     if any([x is None for x in (module,sess,year)]):
         print("Insufficient information on paper.")
+        print(paperurl)
         quit()
     [os.remove(file) for file in os.listdir('./') if file.endswith('.png')]
     [os.remove(file) for file in os.listdir('./') if file.endswith('.html')]
