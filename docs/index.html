@@ -193,7 +193,7 @@
         <div style="text-align: justify;text-align-last: center"><button id="searchbut" class="search" onclick="searchqs();">SEARCH</button>
         <button id="filbut" class="search">VIEW FILTERS</span></div>
     </div>
-    <div id="infoalert" class="alert siimple-alert siimple-alert--primary">THERE ARE OVER 2000 CATEGORISED QUESTIONS FROM OVER 200 PAPERS AVAILABLE TO SEARCH!</div>    
+    <div id="infoalert" class="alert siimple-alert siimple-alert--primary">THERE ARE OVER <span id="numqs"></span> CATEGORISED QUESTIONS FROM OVER 200 PAPERS AVAILABLE TO SEARCH!</div>    
     <div id="resalert" style="display:none" class="alert siimple-alert siimple-alert--success">YOUR SEARCH RETURNED 3 QUESTIONS</div>
     <div id="results" style="text-align: justify; text-align-last: center;margin-top: 1rem"></div>
     </div></body>
@@ -246,6 +246,7 @@
                 var text = file.responseText;
                 records = text.split("\n").filter(v => v !== "");
                 records = records.map(v => v.split("@~").filter(l => l !== ""));
+                document.getElementById("numqs").innerHTML = records.length;
             }
         }
     }
