@@ -15,8 +15,8 @@ def process_text(text):
 def get_info(paperurl):
     MODULES = ["C1","C2","C3","C4","PH1","PH2","PH4","PH5","M1","S1","CH1","CH2","CH4","CH5","FUNDAMENTALS OF COMPUTER SCIENCE"]
     acurl = urllib.parse.unquote(paperurl)
-    os.system("curl {}  -k --insecure > test.pdf".format(paperurl,"test"))
-    os.system("pdftohtml test.pdf -c -s -l 1")
+    os.system("curl {}  -s -k --insecure > test.pdf".format(paperurl,"test"))
+    os.system("pdftohtml test.pdf -c -q -s -l 1")
     try:
         with open("test-html.html") as fobj:
             data = fobj.read()
@@ -46,6 +46,7 @@ def get_info(paperurl):
     return [module,sess,year]
 
 def load_data(paperurl,msurl):
+    print("------------------------------")
     with open("docs/WJEC.txt","r") as fobj:
         if paperurl in fobj.read() :
             print("PAPER ALREADY ADDED.")
@@ -54,15 +55,16 @@ def load_data(paperurl,msurl):
     if info is None:
         print("INVALID PDF : {}".format(paperurl))
         return
-    os.system("curl {} -k --insecure > {}.pdf".format(paperurl,"test"))
-    os.system("pdftohtml test.pdf -c -s -f 2")
+    os.system("curl {} -k -s --insecure > {}.pdf".format(paperurl,"test"))
+    os.system("pdftohtml test.pdf -c -q -s -f 2")
     with open("test-html.html") as fobj:
         data = fobj.read()
     data = data.replace("&nbsp;","").replace("&nbsp","").replace("&#160;","").replace("&#160","")
-    matchesr = re.findall(r"(>[A-Z]?[0-9]+[\.\"]<)",data) + ["grejgerugherugheiu"]
-    matches = []
-    [matches.append(item) for item in matchesr if item not in matches]
-    print(matches)
+    matches = re.findall(r"(<b>([A-Z]?[0-9]+)[^\s\na-zA-Z\d]*?\.[^\s\n\d]*?<\/b>)",data) + [("greherht","frhgeruhu")]
+    #matches = re.findall(r"<b>([^\n]*(([A-Z])?[0-9]+)[^\n]*\.[^\n]*)<\/b>",data)
+    #matchesr = re.findall(r"(>[A-Z]?[0-9]+[\.\"]<)",data) + ["grejgerugherugheiu"]
+    #[matches.append(item) for item in matchesr if item not in matches]
+    print(" ".join([m[1] for m in matches[:-1]]))
     qtexts = []
     qnums = []
     pagenum = 1
@@ -73,7 +75,7 @@ def load_data(paperurl,msurl):
         for l in lines:
             if re.search("page([0-9]+)-div",l) is not None:
                 pagenum += 1
-            if matches[curri] in l:
+            if matches[curri][0] in l:
                 if temp is not None: qtexts.append(temp)
                 temp = ""
                 curri += 1
@@ -83,7 +85,7 @@ def load_data(paperurl,msurl):
     [os.remove(file) for file in os.listdir('./') if file.endswith('.png')] 
     [os.remove(file) for file in os.listdir('./') if file.endswith('.html')]
     [os.remove(file) for file in os.listdir('./') if file.endswith('.pdf')]
-    if len(qtexts) == 0:
+    if len(qtexts) < 3:
         print("NO QUESTIONS FOUND -- INVALID PAPER")
         return
     else:
@@ -93,7 +95,7 @@ def load_data(paperurl,msurl):
     texts = [h.handle(q) for q in qtexts]
     unique = [process_text(t) for t in texts]
     for i in range(len(unique)):
-        record = "{}@~{}@~{}@~{}@~{}@~{}@~{}@~{}\n".format(info[0],info[1],info[2],i+1,qnums[i],paperurl,msurl," ".join(unique[i]))
+        record = "{}@~{}@~{}@~{}@~{}@~{}@~{}@~{}\n".format(info[0],info[1],info[2],matches[i][1],qnums[i],paperurl,msurl," ".join(unique[i]))
         with open("docs/WJEC.txt","a") as fobj:
             fobj.write(record)
 
@@ -105,6 +107,7 @@ def main():
         print("Every paper must have a markscheme.") ; return
     for i in range(0,len(lines)-1,2):
         load_data(lines[i],lines[i+1])
+        print("{:.2f}%".format(100 * (i+1)/(len(lines))))
     print("PROCESS FINISHED.")
     with open("docs/WJEC.txt","r") as fobj:
         ldata = fobj.read()
@@ -112,4 +115,3 @@ def main():
     print("{} QUESTIONS FROM {} PAPERS AVAILABLE.".format(len(llines),len(lines)/2))
 
 if __name__ == '__main__' : main()
-
