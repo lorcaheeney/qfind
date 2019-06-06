@@ -274,6 +274,7 @@
             for(var match of matches){
                 var res = document.createElement("div")
                 res.className = "result";
+                console.log(match);
                 res.innerHTML = `<div class="siimple-h3" style="color: #434343;margin:2%">WJEC ${match[0]} ${match[1]} ${match[2]} Q${match[3]}</div>
                 <div id="viewbut" onclick="window.open('${match[5]+"#page="+match[4]}');">VIEW QUESTION</div>
                 <div id="viewbut" onclick="window.open('${match[6]}');">VIEW MARK SCHEME</div>`;
