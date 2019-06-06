@@ -272,16 +272,18 @@
         swords = swords.filter(v => v !== "").map(s => s.toUpperCase());
         var matches = [];
         for(var elem of records){
+            var valid = true;
             for(var word of swords){
-                if (elem.length == 8 && elem[7].includes(word)){
-                    if (actives[elem[0]] && actives[elem[1].toLowerCase()] && actives["wjec"]){
-                        matches.push(elem);
-                        break;
-                    }
+                if (!(elem.length == 8 && elem[7].includes(word) && actives[elem[0]] && actives[elem[1].toLowerCase()] && actives["wjec"])){
+                    valid = false;
                 }
+            }
+            if (valid){
+                matches.push(elem)
             }
         }
         if (matches.length == 0){
+            document.getElementById("results").innerHTML = "";
             document.getElementById("resalert").style.display = "none";
             var res = document.createElement("h1");
             res.innerHTML = "YOUR SEARCH RETURNED NO RESULTS";
