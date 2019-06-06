@@ -171,6 +171,8 @@
     <div style="text-align: center;">
     <div id="board-out" class="overlay-out">
         <div id="board-overlay" class="overlay">
+            <button id="applyall" class="search">APPLY ALL</button>
+            <button id="removeall" class="search">REMOVE ALL</button>
             <h1>EXAM BOARD FILTERS</h1>
             <div id="wjec" class="filter active" onclick="handlechange(this);">WJEC</div>
             <div id="eduqas" class="filter active" onclick="handlechange(this);">EDUQAS</div>
@@ -230,6 +232,20 @@
             l = false;
         }
     });
+    document.getElementById("applyall").addEventListener("click",function(evt){
+        var ds = document.getElementById("board-overlay").getElementsByTagName("div");
+        for(var d of ds){
+            actives[d.id] = true;
+            if (!d.classList.contains("active")) d.classList.add("active");
+        }
+    })
+    document.getElementById("removeall").addEventListener("click",function(evt){
+        var ds = document.getElementById("board-overlay").getElementsByTagName("div");
+        for(var d of ds){
+            actives[d.id] = false;
+            if (d.classList.contains("active")) d.classList.remove("active");
+        }
+    })
     document.getElementById("filbut").addEventListener("click",function(evt){
         document.getElementById("board-out").style.cssText = "display: block;";
         console.log(document.getElementById("board-out").style.display);
@@ -266,6 +282,9 @@
         }
         if (matches.length == 0){
             document.getElementById("resalert").style.display = "none";
+            var res = document.createElement("h1");
+            res.innerHTML = "YOUR SEARCH RETURNED NO RESULTS";
+            document.getElementById("results").appendChild(res);
         } else {
             var n = 0
             document.getElementById("resalert").style.display = "inline-block";
