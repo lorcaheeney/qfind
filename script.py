@@ -46,7 +46,7 @@ def get_info(paperurl):
     return [module,sess,year]
 
 def load_data(paperurl,msurl):
-    with open("data/WJEC.txt","r") as fobj:
+    with open("docs/WJEC.txt","r") as fobj:
         if paperurl in fobj.read() :
             print("PAPER ALREADY ADDED.")
             return
@@ -59,7 +59,10 @@ def load_data(paperurl,msurl):
     with open("test-html.html") as fobj:
         data = fobj.read()
     data = data.replace("&nbsp;","").replace("&nbsp","").replace("&#160;","").replace("&#160","")
-    matches = re.findall(r"<b>[0-9]+\.</b>",data) + ["grejgerugherugheiu"]
+    matchesr = re.findall(r"(>[A-Z]?[0-9]+[\.\"]<)",data) + ["grejgerugherugheiu"]
+    matches = []
+    [matches.append(item) for item in matchesr if item not in matches]
+    print(matches)
     qtexts = []
     qnums = []
     pagenum = 1
