@@ -112,7 +112,7 @@
         .result {
             display: inline-block;
             text-align: center;
-            width: 25%;
+            width: 28%;
             border: solid 2px #434343;
             border-radius: 20px;
             margin-left: 2%;
@@ -152,7 +152,6 @@
             width: 80%;
             opacity: 1;
             background-color: white;
-            height: 100vh;
             z-index: 10;
             border-radius: 40px;
             border: 1px solid red;
@@ -173,14 +172,14 @@
             <button id="applyall" class="search">APPLY ALL</button>
             <button id="removeall" class="search">REMOVE ALL</button>
             <h1>EXAM BOARD FILTERS</h1>
-            <div id="wjec" class="filter active" onclick="handlechange(this);">WJEC</div>
-            <div id="eduqas" class="filter active" onclick="handlechange(this);">EDUQAS</div>
-            <div id="aqa" class="filter active" onclick="handlechange(this);">AQA</div>
-            <div id="edexcel" class="filter active" onclick="handlechange(this);">EDEXCEL</div>
-            <div id="ocr" class="filter active" onclick="handlechange(this);">OCR</div>
+            <div id="WJEC" class="filter active" onclick="handlechange(this);">WJEC</div>
+            <div id="EDUQAS" class="filter active" onclick="handlechange(this);">EDUQAS</div>
+            <div id="AQA" class="filter active" onclick="handlechange(this);">AQA</div>
+            <div id="EDEXCEL" class="filter active" onclick="handlechange(this);">EDEXCEL</div>
+            <div id="OCR" class="filter active" onclick="handlechange(this);">OCR</div>
             <h1>SESSION FILTERS</h1>
-            <div id="summer" class="filter active" onclick="handlechange(this);">SUMMER</div>
-            <div id="winter" class="filter active" onclick="handlechange(this);">WINTER</div>
+            <div id="SUMMER" class="filter active" onclick="handlechange(this);">SUMMER</div>
+            <div id="WINTER" class="filter active" onclick="handlechange(this);">WINTER</div>
             <h1>MODULE FILTERS</h1>
         </div>
     </div>
@@ -199,33 +198,33 @@
     <div id="results" style="text-align: justify; text-align-last: center;margin-top: 1rem"></div>
     </div></body>
     <script>
-    var modules = ["C1","C2","C3","C4","M1","S1","PH1","PH2","PH4","PH5","CH1","CH2","CH4","CH5","FUNDAMENTALS OF COMPUTER SCIENCE"
-    ,"MOTION, ENERGY AND MATTER","ELECTRICITY AND LIGHT","OSCILLATIONS AND NUCLEI"
-    ,"FIELDS AND OPTIONS","SIMPLE REACTIONS","CARBON COMPOUNDS","INORGANIC CHEMISTRY","ORGANIC CHEMISTRY"];
-    var actives = {"wjec":true,"eduqas":true,"aqa":true,"edexcel":true,"ocr":true,"summer":true,"winter":false};
-    for(var mod of modules){
-        actives[mod] = true;
-        var elem = document.createElement("div");
-        elem.id = mod;
-        elem.innerHTML = mod;
-        elem.className = "filter";
-        elem.classList.add("active");
-        elem.onclick= ((t) => (() => {
-            console.log("h");
-            handlechange(t);
-        }))(elem)
-        document.getElementById("board-overlay").appendChild(elem);
+    var modules = [];
+    var actives = {"WJEC":true,"EDUQAS":true,"AQA":true,"EDEXCEL":true,"OCR":true,"SUMMER":true,"WINTER":true};
+    function setuppage(){
+        for(var mod of modules){
+            actives[mod] = true;
+            var elem = document.createElement("div");
+            elem.id = mod;
+            elem.innerHTML = mod;
+            elem.className = "filter";
+            elem.classList.add("active");
+            elem.onclick= ((t) => (() => {
+                console.log("h");
+                handlechange(t);
+            }))(elem)
+            document.getElementById("board-overlay").appendChild(elem);
+        }
     }
     function handlechange(elem){
-        console.log(elem);
-        if (modules.includes(elem.id)){console.log(elem.id);}
-        if (actives[elem.id]){
-            elem.classList.remove("active");
-        } else {
-            elem.classList.add("active")
+            console.log(elem);
+            if (modules.includes(elem.id)){console.log(elem.id);}
+            if (actives[elem.id]){
+                elem.classList.remove("active");
+            } else {
+                elem.classList.add("active")
+            }
+            actives[elem.id] = !actives[elem.id];
         }
-        actives[elem.id] = !actives[elem.id];
-    }
     var l = false;
     document.addEventListener("click",function(evt){
         if (!document.getElementById("board-overlay").contains(evt.target) && l){
@@ -256,14 +255,18 @@
     var records = [];
     function loadfile(){
         var file = new XMLHttpRequest();
-        file.open("GET","https://lorcajheeney.github.io/qfind/WJEC.txt",true);
+        file.open("GET","PDFS.txt",true);
         file.send();
         file.onreadystatechange= function(){
             if (file.readyState == 4 && (file.status == 200 || file.status == 0)){
                 var text = file.responseText;
-                records = text.split("\n").filter(v => v !== "");
-                records = records.map(v => v.split("@~").filter(l => l !== ""));
+                var sections = text.split("--------").filter(v => v !== "");
+                modules = sections[0].split("\n").filter(v => v !== "").slice(1)
+                for(var board of sections.splice(1)){
+                    records = records.concat(board.split("\n").filter(v => v !== "").slice(1).map(e => e.split("@~").filter(r => r !== "")))                    
+                }
                 document.getElementById("numqs").innerHTML = records.length;
+                setuppage();
             }
         }
     }
@@ -274,7 +277,7 @@
         for(var elem of records){
             var valid = true;
             for(var word of swords){
-                if (!(elem.length == 8 && elem[7].includes(word) && actives[elem[0]] && actives[elem[1].toLowerCase()] && actives["wjec"])){
+                if (!(elem.length == 9 && elem[8].includes(word) && actives[elem[1]] && actives[elem[2]] && actives[elem[0]])){
                     valid = false;
                 }
             }
@@ -297,9 +300,9 @@
                 var res = document.createElement("div")
                 res.className = "result";
                 console.log(match);
-                res.innerHTML = `<div class="siimple-h3" style="color: #434343;margin:2%">WJEC ${match[0]} ${match[1]} ${match[2]} Q${match[3]}</div>
-                <div id="viewbut" onclick="window.open('${match[5]+"#page="+match[4]}');">VIEW QUESTION</div>
-                <div id="viewbut" onclick="window.open('${match[6]}');">VIEW MARK SCHEME</div>`;
+                res.innerHTML = `<div class="siimple-h3" style="color: #434343;margin:2%">${match[0]} ${match[1]} ${match[2]} ${match[3]} Q${match[4]}</div>
+                <div id="viewbut" onclick="window.open('${match[6]+"#page="+match[5]}');">VIEW QUESTION</div>
+                <div id="viewbut" onclick="window.open('${match[7]}');">VIEW MARK SCHEME</div>`;
                 document.getElementById("results").appendChild(res);
                 n += 1
                 if (n % 3 == 0){

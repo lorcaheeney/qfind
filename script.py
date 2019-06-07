@@ -1,120 +1,164 @@
+##### LIBRARY IMPORTS
 import os
 import re
 import html2text
 import urllib
+#### GLOBAL VARIABLES
+MODULES = []
+URLTXT = ""
+PDFSTXT = ""
+#### FUNCTIONS
+def clear_workspace():
+    #### FUNCTIONS TO REMOVE TEMPORARY FILES CREATED
+    [os.remove(file) for file in os.listdir('./') if file.endswith('.png')]
+    os.remove("temp.pdf")
+    os.remove("temp-html.html")
+
+def get_html_data(paperurl,is_first):
+    global MODULES
+    #### FUNCTION TO CONVERT PDF TO HTML AND THEN RETURN RAWHTML
+    os.system("curl {} -s -k --insecure > temp.pdf".format(paperurl))
+    os.system("pdftohtml temp.pdf -c -q -s {}".format("-l 1" if is_first else "-f 2"))
+    try:
+        with open("temp-html.html","r") as fobj:
+            rawhtml = fobj.read()
+        clear_workspace()
+        return rawhtml
+    except:
+        print("INVALID PDF : {}".format(paperurl))
+        return None
+
+def get_text_data(rawhtml):
+    #### FUNCTION TO STRIP TAGS FROM HTML TO LEAVE TEXT CONTENT
+    hobj = html2text.HTML2Text()
+    hobj.ignore_links = True
+    return hobj.handle(rawhtml)
 
 def process_text(text):
-    text = text.replace("-"," ").replace("."," ").replace("\n"," ").replace("_"," ").replace(","," ")
+    #### FUNCTION TO RETURN UNIQUE WORDS FROM BLOCK OF TEXT
+    PUNCTUATION = ["-",".","\n","_",","]
+    for punc in PUNCTUATION:
+        text = text.replace(punc," ")
     text = re.sub(r"[^\w\s]","",text).upper()
     words = []
     for word in text.split(" "):
         if re.search(r"[0-9]",word) is None and re.search(r"[^A-Z]",word) is None and word not in words:
             words.append(word)
-    return list(filter(lambda x : x!="", words))
+    return list(filter(lambda x : x != "", words))
 
-def get_info(paperurl):
-    MODULES = ["C1","C2","C3","C4","PH1","PH2","PH4","PH5","M1","S1","CH1","CH2","CH4","CH5","FUNDAMENTALS OF COMPUTER SCIENCE"
-    ,"MOTION, ENERGY AND MATTER","ELECTRICITY AND LIGHT","OSCILLATIONS AND NUCLEI"
-    ,"FIELDS AND OPTIONS","SIMPLE REACTIONS","CARBON COMPOUNDS","INORGANIC CHEMISTRY","ORGANIC CHEMISTRY"]
-    acurl = urllib.parse.unquote(paperurl)
-    os.system("curl {}  -s -k --insecure > test.pdf".format(paperurl,"test"))
-    os.system("pdftohtml test.pdf -c -q -s -l 1")
-    try:
-        with open("test-html.html") as fobj:
-            data = fobj.read()
-    except:return None
-    h = html2text.HTML2Text()
-    h.ignore_links = True
-    text = h.handle(data).upper() + acurl.upper()
+def get_info(paperurl,board):
+    #### FUNCTION TO GET PAPER INFO FROM A PAPER
+    acturl = urllib.parse.unquote(paperurl)
+    rawhtml = get_html_data(paperurl,True)
+    if rawhtml is None: return None
+    input_text = get_text_data(rawhtml).upper() + acturl.upper()
     module, sess, year = (None,)*3
+    #### SEARCH FOR MODULE
     for mod in MODULES:
-        if re.search(r"\b{}\b".format(mod),text) is not None:
+        if re.search(r"\b{}\b".format(mod),input_text) is not None:
             module = mod; break
-    for month in ["JANUARY","FEBUARY","DECEMBER","NOVEMBER","OCTOBER"]:
-        if re.search(r"\b{}\b".format(month),text) is not None:
-            sess = "WINTER" ; break
+    #### SEARCH FOR SESSION
+    for month in ["JANUARY","FEBUARY","OCTOBER","NOVEMBER","DECEMBER"]:
+        if re.search(r"\b{}\b".format(month),input_text) is not None:
+            sess = "WINTER"; break
     if sess is None: sess = "SUMMER"
-    for lyear in range(1990,2020):
-        if re.search(r"\b{}\b".format(str(lyear)),text) is not None:
-            year = lyear ; break
-
-    print("{} {} {}".format(module,sess,year))
-    if any([x is None for x in (module,sess,year)]):
-        print("Insufficient information on paper.")
-        print(paperurl)
+    #### SEARCH FOR YEAR
+    for date in range(1980,2020):
+        if re.search(r"\b{}\b".format(str(date)),input_text) is not None:
+            year = date; break
+    full_info = [board,module,sess,year]
+    if any([x is None for x in full_info]):
+        print("INSUFFICIENT INFORMATION ON PAPER : {} {} {} {} {}".format(*full_info,paperurl))
         quit()
-    [os.remove(file) for file in os.listdir('./') if file.endswith('.png')]
-    [os.remove(file) for file in os.listdir('./') if file.endswith('.html')]
-    [os.remove(file) for file in os.listdir('./') if file.endswith('.pdf')]
-    return [module,sess,year]
+    print("{} {} {} {}".format(*full_info))
+    return full_info
 
-def load_data(paperurl,msurl):
-    print("------------------------------")
-    with open("docs/WJEC.txt","r") as fobj:
-        if paperurl in fobj.read() :
-            print("PAPER ALREADY ADDED.")
-            return
-    info = get_info(paperurl)
-    if info is None:
-        print("INVALID PDF : {}".format(paperurl))
-        return
-    os.system("curl {} -k -s --insecure > {}.pdf".format(paperurl,"test"))
-    os.system("pdftohtml test.pdf -c -q -s -f 2")
-    with open("test-html.html") as fobj:
-        data = fobj.read()
-    data = data.replace("&nbsp;","").replace("&nbsp","").replace("&#160;","").replace("&#160","")
-    matches = re.findall(r"(<b>([A-Z]?[0-9]+)[^\s\na-zA-Z\d]*?\.[^\s\n\d]*?<\/b>)",data) + [("greherht","frhgeruhu")]
-    #matches = re.findall(r"<b>([^\n]*(([A-Z])?[0-9]+)[^\n]*\.[^\n]*)<\/b>",data)
-    #matchesr = re.findall(r"(>[A-Z]?[0-9]+[\.\"]<)",data) + ["grejgerugherugheiu"]
-    #[matches.append(item) for item in matchesr if item not in matches]
-    print(" ".join([m[1] for m in matches[:-1]]))
+    
+def process_paper(board,paperurl,msurl):
+    info = get_info(paperurl,board)
+    if info is None: return
+    rawhtml = get_html_data(paperurl,False)
+    if rawhtml is None: return None
+    #### CLEAN UP RAW HTML FOR SEARCHING
+    INVALIDS = ["&nbsp;","&nbsp","&#160;","&#160"]
+    for inv in INVALIDS:
+        rawhtml = rawhtml.replace(inv,"")
+    #### FIND ALL MATCHES TO QUESTION STARTS
+    MASTER_REGEX = r"(<b>([A-Z]?[0-9]+)[^\s\na-zA-Z\d]*?\.[^\s\n\d]*?<\/b>)"
+    matches = re.findall(MASTER_REGEX,rawhtml) + [("__FEJFIOEF__ROGUE","__ROGUE__FHUERIFGH")]
+    #### ONE PASS ALGORITHM TO GET TEXT FROM EACH QUESTION BASED OFF MATCHES
     qtexts = []
     qnums = []
     pagenum = 1
     if len(matches) > 0:
-        lines = data.split("\n")
         temp = None
-        curri = 0
-        for l in lines:
-            if re.search("page([0-9]+)-div",l) is not None:
+        qindex = 0
+        for line in rawhtml.split("\n"):
+            if re.search("page([0-9]+)-div",line) is not None:
                 pagenum += 1
-            if matches[curri][0] in l:
+            if matches[qindex][0] in line:
                 if temp is not None: qtexts.append(temp)
                 temp = ""
-                curri += 1
+                qindex += 1
                 qnums.append(pagenum)
-            if temp is not None: temp += "\n" + l
+            if temp is not None: temp += "\n" + line
         if temp is not None: qtexts.append(temp)
-    [os.remove(file) for file in os.listdir('./') if file.endswith('.png')] 
-    [os.remove(file) for file in os.listdir('./') if file.endswith('.html')]
-    [os.remove(file) for file in os.listdir('./') if file.endswith('.pdf')]
     if len(qtexts) < 3:
-        print("NO QUESTIONS FOUND -- INVALID PAPER")
-        return
+        print("NO QUESTIONS FOUND INVALID PAPER")
+        return 
     else:
-        print(len(qtexts)," QUESTIONS FOUND.")
-    h = html2text.HTML2Text()
-    h.ignore_links = True
-    texts = [h.handle(q) for q in qtexts]
-    unique = [process_text(t) for t in texts]
-    for i in range(len(unique)):
-        record = "{}@~{}@~{}@~{}@~{}@~{}@~{}@~{}\n".format(info[0],info[1],info[2],matches[i][1],qnums[i],paperurl,msurl," ".join(unique[i]))
-        with open("docs/WJEC.txt","a") as fobj:
-            fobj.write(record)
+        print("{} QUESTIONS FOUND".format(len(qnums)))
+    qtexts = [process_text(get_text_data(t)) for t in qtexts]
+    results = []
+    for i in range(len(qtexts)):
+        results.append("{}@~{}@~{}@~{}@~{}@~{}@~{}@~{}@~{}\n".format(*info,matches[i][1],qnums[i],paperurl,msurl," ".join(qtexts[i])))
+    return results
 
+def lsplit(input,delimiter):
+    return list(filter(lambda x: x != "",input.split(delimiter)))
+
+#### ENTRYPOINT
 def main():
-    with open("load/WJEC.txt","r") as fobj:
-        data = fobj.read()
-    lines = [d for d  in data.split("\n") if d != ""]
-    if len(lines) % 2 != 0:
-        print("Every paper must have a markscheme.") ; return
-    for i in range(0,len(lines)-1,2):
-        load_data(lines[i],lines[i+1])
-        print("{:.2f}%".format(100 * (i+1)/(len(lines))))
-    print("PROCESS FINISHED.")
-    with open("docs/WJEC.txt","r") as fobj:
-        ldata = fobj.read()
-    llines = [d for d  in ldata.split("\n") if d != ""]
-    print("{} QUESTIONS FROM {} PAPERS AVAILABLE.".format(len(llines),len(lines)/2))
+    global MODULES
+    #### OPEN FILES
+    with open("URLS.txt","r") as urlfile:
+        URLTXT = urlfile.read()
+    with open("PDFS.txt","r") as pdffile:
+        PDFSTXT = pdffile.read()
+    #### GET URLS
+    sections = lsplit(URLTXT,"--------")
+    boarddata = {lsplit(head,"\n")[0]:[(lsplit(head,"\n")[1:][i],lsplit(head,"\n")[1:][i+1]) for i in range(0,len(lsplit(head,"\n")[1:]),2)] for head in sections}
+    #### GET MODULES
+    sections = lsplit(PDFSTXT,"--------")
+    MODULES = sections[0].split("\n")[1:]
+    sections = sections[1:]
+    #### FILTER PROCESSED PAPERS
+    preboarddata = boarddata
+    boarddata = {board:[pair for pair in boarddata[board] if pair[0] not in PDFSTXT] for board in boarddata}
+    #### PROCESS PAPERS
+    questions = []
+    for board in boarddata:
+        for pair in boarddata[board]:
+            res = process_paper(board,pair[0],pair[1])
+            if res is not None:
+                questions += res
+    #### UPDATE THE FILE
+    complete_data = {lsplit(head,"\n")[0]:[(lsplit(head,"\n")[1:][i]+"\n") for i in range(0,len(lsplit(head,"\n")[1:]),1)] for head in sections}
+    for q in questions:
+        complete_data[q.split("@~")[0]].append(q)
+    file_template = "--------MODULES"
+    for mod in MODULES:
+        file_template += "\n{}".format(mod)
+    for board in complete_data:
+        file_template += "--------{}\n".format(board)
+        for record in complete_data[board]:
+            file_template += record
+    with open("PDFS.txt","w") as pdffile:
+        pdffile.write(file_template)
+    #### PROCESS FINISHED
+    numqs = sum([len(complete_data[b]) for b in complete_data])
+    print("{} QUESTIONS AVAILABLE".format(numqs))
+    clear_workspace();
+    quit()
 
 if __name__ == '__main__' : main()
