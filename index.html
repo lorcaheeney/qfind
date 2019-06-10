@@ -273,6 +273,7 @@
     function searchqs(){
         var swords = document.getElementById("keysearch").value.split(" ")
         swords = swords.filter(v => v !== "").map(s => s.toUpperCase());
+
         var matches = [];
         for(var elem of records){
             var valid = true;
@@ -285,7 +286,13 @@
                 matches.push(elem)
             }
         }
-        if (matches.length == 0){
+        if (swords.length == 0){
+            document.getElementById("results").innerHTML = "";
+            document.getElementById("resalert").style.display = "none";
+            var res = document.createElement("h1");
+            res.innerHTML = "YOUR SEARCH RETURNED TOO MANY RESULTS";
+            document.getElementById("results").appendChild(res);
+        } else if (matches.length == 0){
             document.getElementById("results").innerHTML = "";
             document.getElementById("resalert").style.display = "none";
             var res = document.createElement("h1");
