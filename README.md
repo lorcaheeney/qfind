@@ -2,18 +2,17 @@
 A word-matching filter-based search engine for past paper questions and mark schemes.
 ## Goals
 ### Short term
-- [ ] Redesign
-- [ ] Better filter system
-- [ ] Add more papers
-- [ ] Multiple pages(home, search, help, about)
-- [ ] Monetisation
-- [ ] Advertising
+- Redesign
+- Better filter system
+- Add more papers
+- Multiple pages(home, search, help, about)
+- Monetisation
+- Advertising
 ### Long term
-- [ ] Domain
-- [ ] My folder
-- [ ] Accounts
-- [ ] Mark calculator
-- [ ] Paper search
+- My folder
+- Accounts
+- Mark calculator
+- Paper search
 ## About
 `qfind` allows users to search thousands of past paper questions by matching keywords or applying filters.
 This functionality is available at the simple client-only webpage [lorcajheeney.github.io/qfind](https://lorcajheeney.github.io/qfind)
