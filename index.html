@@ -276,23 +276,20 @@
 
         var matches = [];
         for(var elem of records){
-            var valid = true;
-            for(var word of swords){
-                if (!(elem.length == 9 && elem[8].includes(word) && actives[elem[1]] && actives[elem[2]] && actives[elem[0]])){
-                    valid = false;
+            if (elem.length == 9 && actives[elem[1]] && actives[elem[2]] && actives[elem[0]]){
+                console.log("GOT HERE")
+                var valid = true;
+                for(var word of swords){
+                    if (!(elem.length == 9 && elem[8].includes(word))){
+                        valid = false;
+                    }
+                }
+                if (valid){
+                    matches.push(elem)
                 }
             }
-            if (valid){
-                matches.push(elem)
-            }
         }
-        if (swords.length == 0){
-            document.getElementById("results").innerHTML = "";
-            document.getElementById("resalert").style.display = "none";
-            var res = document.createElement("h1");
-            res.innerHTML = "YOUR SEARCH RETURNED TOO MANY RESULTS";
-            document.getElementById("results").appendChild(res);
-        } else if (matches.length == 0){
+        if (matches.length == 0){
             document.getElementById("results").innerHTML = "";
             document.getElementById("resalert").style.display = "none";
             var res = document.createElement("h1");
