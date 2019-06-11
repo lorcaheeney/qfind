@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>QFIND</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link href="https://cdn.lineicons.com/1.0.1/LineIcons.min.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <style>
+        textarea:focus, input:focus, button:focus{
+            outline: none;
+        }
+        .deselect {
+            user-select: none;
+            border: 1px solid white;
+            padding: 0 20px 0 20px;
+            border-radius: 15px;
+            min-width: 50px;
+            text-align: center;
+            margin: 5px 5px 5px 5px;
+            cursor: pointer;
+        }
+        .deselect:hover{
+            background-color: white;
+            color: #428bca;
+            font-weight: bold;
+        }
+        .select{
+            user-select: none;
+            border: 1px solid white;
+            padding: 0 20px 0 20px;
+            border-radius: 15px;
+            min-width: 50px;
+            text-align: center;
+            margin: 5px 5px 5px 5px;
+            cursor: pointer;
+            background-color: white;
+            color: #428bca;
+            font-weight: bold;
+        }
+        </style>
+    </head>
+    <body style="font-family: Roboto Mono" class="bg-white" >
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <a class="navbar-brand text-light" style="font-size: 2rem" href="#"><i class="lni-keyword-research"></i>  QFIND</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navlist">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navlist">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Search</a>
+                    </li>
+                    <li class="nav-item">
+                       <a class="nav-link" href="#">Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div>
+        <div class="d-flex justify-content-center pt-4 pb-4">
+            <div class="text-center border rounded border-dark w-75 bg-primary border-0 text-light">
+                <span class="font-weight-bold mt-2">SEARCH QUESTIONS</span>
+                <div class="text-left mb-3 ml-2 mt-2 d-flex justify-content-center">
+                    <input type="text" id="sinput" class="w-75 rounded border-primary pl-2 border-0">
+                    <button type="button" id="searchbut" class="btn btn-success ml-4">SEARCH</button>
+                </div>
+                <div class="text-left">
+                    <div class="ml-2">
+                        EXAM BOARDS: 
+                        <label><input type="checkbox" id="WJEC"> WJEC</label>
+                        <label><input type="checkbox" id="EDUQAS"> EDUQAS</label>
+                        <label><input type="checkbox" id="AQA"> AQA</label>
+                        <label><input type="checkbox" id="EDEXCEL"> EDEXCEL</label>
+                        <label><input type="checkbox" id="OCR"> OCR</label>
+                    </div>
+                    <div class="ml-2">
+                            SESSION:
+                            <div style="text-justify: center; text-align-last: center;">
+                                <label><input type="checkbox" id="SUMMER"> SUMMER</label>
+                                <label><input type="checkbox" id="WINTER"> WINTER</label>
+                            </div>
+                    </div>
+                    <div class="ml-2">
+                            YEAR: 
+                            <div style="text-justify: center;text-align-last: center;text-align:center;">
+                                <label>MIN YEAR -> <input type="text" class="rounded border-0 pl-2 w-25" id="min-year" value="1980"></label>
+                                <label>MAX YEAR -> <input type="text" class="rounded border-0 pl-2 w-25" id="max-year" value="2020"></label>
+                            </div>
+                    </div>
+                    <div class="ml-2" onclick="viewmodules()">
+                            SUBJECT:
+                            <div style="text-justify: center; text-align-last: center;">
+                                <label class="mr-2"><input type="checkbox" id="MATHEMATICS"> MATHEMATICS</label>
+                                <label class="mr-2"><input type="checkbox" id="PHYSICS"> PHYSICS</label>
+                                <label class="mr-2"><input type="checkbox" id="CHEMISTRY"> CHEMISTRY</label>
+                                <label class="mr-2"><input type="checkbox" id="BIOLOGY"> BIOLOGY</label>
+                                <label class="mr-2"><input type="checkbox" id="COMPUTER SCIENCE"> COMPUTER SCIENCE</label>
+                                <label class="mr-2"><input type="checkbox" id="BUSINESS"> BUSINESS</label>
+                            </div>
+                    </div>
+                    <div class="ml-2 mb-2">
+                            MODULES:
+                            <div style="text-justify: center; text-align-last: center;" class="pl-5" id="modules">
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div></div>
+        <div class="bg-primary w-100 text-light pt-2 pb-2 pl-2" onmouseen>
+            <h2>Results</h2>
+            <div style="text-justify: center">
+                <span class="ml-2 mr-auto border border-light p-2 w-25 rounded"><span id="numqs">XXXX</span> Questions Avaialable</span>
+                <span class="ml-2 mr-auto p-2 w-25 bg-success rounded border border-light invisible"><span id="numrets">XXXX</span> Questions Returned</span>
+            </div>
+        </div>
+        <div style="min-height: 100vh;" id="results" class="mt-4 text-center">
+        </div>
+        </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    </body>
+    <script>
+    var modulemap = {};
+    var records = {};
+    var actives = {};
+    function viewmodules(){
+        var count = 0;
+        document.getElementById("modules").innerHTML = "";
+        for(var sub in modulemap){
+            if (document.getElementById(sub).checked){
+                for(var mod of modulemap[sub]){
+                    count++;
+                    document.getElementById("modules").innerHTML += `<span class="${actives[mod] ? "select": "deselect" }" id="${mod}" onclick="handlemodulepress(this);">${mod}</span>`;
+                    if(count % 6 == 0){
+                        document.getElementById("modules").innerHTML += "<br>"
+                    }
+                }
+            }
+        }
+    }
+    function setupactives(){
+        for(var sub in modulemap){
+            for(var mod of modulemap[sub]){
+                actives[mod] = false;
+            }
+        }
+    }
+
+    function handlemodulepress(elem){
+        if(actives[elem.id]){
+            actives[elem.id] = false;
+            elem.classList.remove("select");
+            elem.classList.add("deselect")
+        } else {
+            actives[elem.id] = true;
+            elem.classList.remove("deselect");
+            elem.classList.add("select")
+        }
+    }
+    var min = 0;
+    var max = 10;
+    window.addEventListener("scroll",function(){
+        if(document.documentElement.getBoundingClientRect().bottom <= document.documentElement.clientHeight + 100){
+            console.log("hello");
+            min = max;
+            max = min + 10;
+            outputmatches(matchesglob);
+        }
+    })
+    var matchesglob = [];
+    function outputmatches(matches){
+        for(var match of matches.slice(min,max)){
+            var fmtstring = `<div class="result container mb-3"><div class="row">
+                <div class="col-8border border-light bg-primary text-light p-2 rounded w-75 text-left pl-5">
+                    <h2 class="ml-3">${match[0]} ${match[1]} ${match[2]} ${match[3]}</h2>
+                    <div class="container"><div class="row">
+                        <h3 style="display: inline-block" class="col-8 font-weight-bold">Q${match[4]}</h3>
+                        <button class="btn border bg-primary border-light mb-2 text-light">Add to My Folder</button>
+                    </div></div>
+                </div>
+                <div style="margin-left:-10px;" class="col-3 border border-primary rounded">
+                        <button class="btn btn-primary mt-2" onclick="window.open('${match[6]}#page=${match[5]}');">View Question</button>
+                        <button class="btn btn-primary mt-2 mb-auto" onclick="window.open('${match[7]}');">View Mark Scheme</button>
+                </div>
+            </div>`;
+            document.getElementById("results").innerHTML += fmtstring;
+        }
+    }
+    document.getElementById("searchbut").addEventListener("click",function(){
+        document.getElementById("results").innerHTML = `<div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>`;
+        var swords = document.getElementById("sinput").value.split(" ").filter(v => v !== "");
+        var minyear = new Number(document.getElementById("min-year").value);
+        var maxyear = new Number(document.getElementById("max-year").value);
+        var matches = [];
+        for(var paper in records){
+            paper = paper.split(";").filter(v => v !== "");
+            var year = new Number(paper[3]);
+            if (document.getElementById(paper[0]).checked && actives[paper[1]] && document.getElementById(paper[2]).checked && (year >= minyear) && (year <= maxyear)){
+                for(var rec of records[paper.join(";")]){
+                    var valid = true;
+                    for(var word of swords){
+                        if(!(rec[4].includes(word.toUpperCase()))){
+                            valid = false; break;
+                        }
+                    }
+                    if (valid){
+                        matches.push(paper.concat(rec));
+                    }
+                }
+            }
+        }
+        matchesglob = matches;
+        Array.from(document.getElementsByClassName("invisible")).map(e => e.classList.remove("invisible"));
+        document.getElementById("numrets").innerHTML = matches.length;
+        document.getElementById("results").innerHTML = "";
+        outputmatches(matches);
+        
+    });
+    function loadfile(){
+        var file = new XMLHttpRequest();
+        file.open("GET","../data/PDFS.txt",true);
+        file.send();
+        file.onreadystatechange= function(){
+            if (file.readyState == 4 && (file.status == 200 || file.status == 0)){
+                var text = file.responseText;
+                var sections = text.split("--------").filter(v => v !== "");
+                modules = sections[0].split("\n").filter(v => v !== "").slice(1)
+                for(var mod of modules){
+                    modulemap[mod.split(";")[0]] = mod.split(";").filter(v => v !== "").slice(1);
+                }
+                var numrecords = 0;
+                for(var board of sections.slice(1)){
+                    for(var rec of board.split("\n").slice(1).filter(v => v !== "")){
+                        numrecords++;
+                        var attrs = rec.split("@~").filter(k => k !== "");
+                        if(records[attrs.slice(0,4).join(";")] === undefined){
+                            records[attrs.slice(0,4).join(";")] = [attrs.splice(4)];
+                        } else {
+                            records[attrs.slice(0,4).join(";")] = records[attrs.slice(0,4).join(";")].concat([attrs.slice(4)]);
+                        }
+                    }
+                }
+                document.getElementById("numqs").innerHTML = numrecords;
+                setupactives();
+            }
+        }
+    }
+    loadfile();
+    </script>
+</html>

@@ -19,6 +19,7 @@ def get_html_data(paperurl,is_first):
     #### FUNCTION TO CONVERT PDF TO HTML AND THEN RETURN RAWHTML
     os.system("curl {} -s -k --insecure > temp.pdf".format(paperurl))
     os.system("pdftohtml temp.pdf -c -q -s {}".format("-l 1" if is_first else "-f 2"))
+    exiter = False
     try:
         with open("temp-html.html","r") as fobj:
             rawhtml = fobj.read()
@@ -84,7 +85,7 @@ def process_paper(board,paperurl,msurl):
     for inv in INVALIDS:
         rawhtml = rawhtml.replace(inv,"")
     #### FIND ALL MATCHES TO QUESTION STARTS
-    MASTER_REGEX = r"(<b>([A-Z]?[0-9]+)[^\s\na-zA-Z\d]*?\.[^\s\n\d]*?<\/b>)"
+    MASTER_REGEX = r"(<b>([A-Z]?[0-9]+)[^\s\na-zA-Z\d]*?\.[^\n\d]*?<\/b>)"
     matches = re.findall(MASTER_REGEX,rawhtml) + [("__FEJFIOEF__ROGUE","__ROGUE__FHUERIFGH")]
     #### ONE PASS ALGORITHM TO GET TEXT FROM EACH QUESTION BASED OFF MATCHES
     qtexts = []
@@ -121,16 +122,18 @@ def lsplit(input,delimiter):
 def main():
     global MODULES
     #### OPEN FILES
-    with open("URLS.txt","r") as urlfile:
+    with open("data/URLS.txt","r") as urlfile:
         URLTXT = urlfile.read()
-    with open("PDFS.txt","r") as pdffile:
+    with open("data/PDFS.txt","r") as pdffile:
         PDFSTXT = pdffile.read()
     #### GET URLS
     sections = lsplit(URLTXT,"--------")
     boarddata = {lsplit(head,"\n")[0]:[(lsplit(head,"\n")[1:][i],lsplit(head,"\n")[1:][i+1]) for i in range(0,len(lsplit(head,"\n")[1:]),2)] for head in sections}
     #### GET MODULES
     sections = lsplit(PDFSTXT,"--------")
-    MODULES = sections[0].split("\n")[1:]
+    MODULES = []
+    for line in sections[0].split("\n")[1:]:
+        MODULES += line.split(";")[1:]
     sections = sections[1:]
     #### FILTER PROCESSED PAPERS
     preboarddata = boarddata
@@ -146,14 +149,12 @@ def main():
     complete_data = {lsplit(head,"\n")[0]:[(lsplit(head,"\n")[1:][i]+"\n") for i in range(0,len(lsplit(head,"\n")[1:]),1)] for head in sections}
     for q in questions:
         complete_data[q.split("@~")[0]].append(q)
-    file_template = "--------MODULES"
-    for mod in MODULES:
-        file_template += "\n{}".format(mod)
+    file_template = "--------" + PDFSTXT.split("--------")[1]
     for board in complete_data:
         file_template += "--------{}\n".format(board)
         for record in complete_data[board]:
             file_template += record
-    with open("PDFS.txt","w") as pdffile:
+    with open("data/PDFS.txt","w") as pdffile:
         pdffile.write(file_template)
     #### PROCESS FINISHED
     numqs = sum([len(complete_data[b]) for b in complete_data])
