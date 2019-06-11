@@ -227,7 +227,7 @@
     });
     function loadfile(){
         var file = new XMLHttpRequest();
-        file.open("GET","../data/PDFS.txt",true);
+        file.open("GET","PDFS.txt",true);
         file.send();
         file.onreadystatechange= function(){
             if (file.readyState == 4 && (file.status == 200 || file.status == 0)){

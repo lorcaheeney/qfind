@@ -124,7 +124,7 @@ def main():
     #### OPEN FILES
     with open("data/URLS.txt","r") as urlfile:
         URLTXT = urlfile.read()
-    with open("data/PDFS.txt","r") as pdffile:
+    with open("docs/PDFS.txt","r") as pdffile:
         PDFSTXT = pdffile.read()
     #### GET URLS
     sections = lsplit(URLTXT,"--------")
@@ -154,7 +154,7 @@ def main():
         file_template += "--------{}\n".format(board)
         for record in complete_data[board]:
             file_template += record
-    with open("data/PDFS.txt","w") as pdffile:
+    with open("docs/PDFS.txt","w") as pdffile:
         pdffile.write(file_template)
     #### PROCESS FINISHED
     numqs = sum([len(complete_data[b]) for b in complete_data])
