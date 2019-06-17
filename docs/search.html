@@ -196,15 +196,28 @@
         }
     }
     document.getElementById("searchbut").addEventListener("click",function(){
+	min = 0;
+	max = 10;
         document.getElementById("results").innerHTML = `<div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>`;
         var swords = document.getElementById("sinput").value.split(" ").filter(v => v !== "");
         var minyear = new Number(document.getElementById("min-year").value);
         var maxyear = new Number(document.getElementById("max-year").value);
         var matches = [];
+	let cached = {};
+	for(var sub in modulemap){
+	    cached[sub] = document.getElementById(sub).checked;
+	}
         for(var paper in records){
             paper = paper.split(";").filter(v => v !== "");
             var year = new Number(paper[3]);
             if (document.getElementById(paper[0]).checked && actives[paper[1]] && document.getElementById(paper[2]).checked && (year >= minyear) && (year <= maxyear)){
+		var setbreak = false;
+		for(var sub in modulemap){
+		    if (modulemap[sub].includes(paper[1]) && !cached[sub]){
+		        setbreak = true; break;
+		    }
+		}
+		if(setbreak){break;}    
                 for(var rec of records[paper.join(";")]){
                     var valid = true;
                     for(var word of swords){
