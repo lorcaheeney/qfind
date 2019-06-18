@@ -198,6 +198,7 @@
     document.getElementById("searchbut").addEventListener("click",function(){
 	min = 0;
 	max = 10;
+	matchesglob = [];
         document.getElementById("results").innerHTML = `<div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>`;
         var swords = document.getElementById("sinput").value.split(" ").filter(v => v !== "");
         var minyear = new Number(document.getElementById("min-year").value);
