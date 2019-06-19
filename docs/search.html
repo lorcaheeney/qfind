@@ -222,7 +222,9 @@
                 for(var rec of records[paper.join(";")]){
                     var valid = true;
                     for(var word of swords){
-			console.log(rec);
+			if(rec.length != 5){
+			    valid = false; break;
+			}
                         if(!(rec[4].includes(word.toUpperCase()))){
                             valid = false; break;
                         }
