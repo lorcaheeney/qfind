@@ -159,7 +159,7 @@ def main():
     #### PROCESS FINISHED
     numqs = sum([len(complete_data[b]) for b in complete_data])
     print("{} QUESTIONS AVAILABLE".format(numqs))
-    clear_workspace();
+    #clear_workspace();
     quit()
 
 if __name__ == '__main__' : main()
